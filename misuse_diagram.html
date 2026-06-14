@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Misuse Case Diagram – Legacy Digital Forever</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+    h1  { color: #f8fafc; font-size: 1.8rem; margin-bottom: 4px; }
+    .sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px; }
+    .legend {
+      display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend span {
+      display: flex; align-items: center; gap: 7px;
+      color: #cbd5e1; font-size: 0.8rem;
+    }
+    .dot { width: 13px; height: 13px; border-radius: 3px; }
+    svg { border-radius: 16px; border: 1px solid #334155; max-width: 100%; }
+  </style>
+</head>
+<body>
+
+<h1>Misuse Case Diagram</h1>
+<p class="sub">Legacy Digital Forever &nbsp;·&nbsp; Security Threats &amp; Mitigations</p>
+
+<div class="legend">
+  <span><div class="dot" style="background:#1d4ed8"></div> System Use Case</span>
+  <span><div class="dot" style="background:#0f766e"></div> Security Control (Mitigation)</span>
+  <span><div class="dot" style="background:#991b1b"></div> Misuse Case (Attack)</span>
+  <span><div class="dot" style="background:#60a5fa"></div> Legitimate Actor</span>
+  <span><div class="dot" style="background:#f87171"></div> Misuser / Attacker</span>
+</div>
+
+<svg id="svg" width="1500" height="900" style="background:#1e293b;"></svg>
+
+<script>
+const NS  = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('svg');
+
+function el(tag, attrs, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function add(e) { svg.appendChild(e); return e; }
+
+/* ─── DEFS: arrowheads ──────────────────────────────────────── */
+const defs = add(el('defs', {}));
+
+function makeMarker(id, color) {
+  const m = el('marker', { id, markerWidth:8, markerHeight:6,
+    refX:7, refY:3, orient:'auto' });
+  m.appendChild(el('path', { d:'M0,0 L0,6 L8,3 z', fill:color }));
+  defs.appendChild(m);
+}
+makeMarker('arrRed',   '#ef4444');
+makeMarker('arrGreen', '#10b981');
+makeMarker('arrGray',  '#64748b');
+
+/* ─── SYSTEM BOUNDARY ───────────────────────────────────────── */
+// Full canvas: 1500 x 900
+// System box: x=150 y=30 w=1200 h=840
+add(el('rect', { x:150, y:30, width:1200, height:840, rx:10,
+  fill:'none', stroke:'#475569', 'stroke-width':2,
+  'stroke-dasharray':'10,5' }));
+add(el('text', { x:155, y:22, fill:'#64748b', 'font-size':13,
+  'font-family':'Segoe UI', 'font-style':'italic' },
+  'Legacy Digital Forever System'));
+
+/* ─── COLUMN DIVIDERS ───────────────────────────────────────── */
+// Zone 1 (Use Cases):     x 150–540  → cx=345
+// Zone 2 (Security):      x 540–960  → cx=750
+// Zone 3 (Misuse Cases):  x 960–1350 → cx=1155
+add(el('line', { x1:540, y1:38, x2:540, y2:862,
+  stroke:'#334155', 'stroke-width':1, 'stroke-dasharray':'5,4' }));
+add(el('line', { x1:960, y1:38, x2:960, y2:862,
+  stroke:'#334155', 'stroke-width':1, 'stroke-dasharray':'5,4' }));
+
+/* ─── ZONE HEADERS ──────────────────────────────────────────── */
+const zones = [
+  { x:345,  label:'SYSTEM USE CASES',     color:'#60a5fa' },
+  { x:750,  label:'SECURITY CONTROLS',    color:'#2dd4bf' },
+  { x:1155, label:'MISUSE CASES (ATTACKS)', color:'#f87171' },
+];
+for (const z of zones) {
+  add(el('text', { x:z.x, y:56, 'text-anchor':'middle',
+    fill:z.color, 'font-size':11, 'font-weight':'bold',
+    'font-family':'Segoe UI', 'letter-spacing':1.5 }, z.label));
+}
+
+/* ─── USE CASE / MISUSE CASE DATA ──────────────────────────── */
+const RX = 105, RY = 23;
+
+// id, cx, cy, label, fill, stroke, tc
+const nodes = [
+
+  /* ── SYSTEM USE CASES (cx=345) ────────────────────────────── */
+  { id:'UC1', cx:345, cy:115,  label:'Login / Register Account',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC2', cx:345, cy:215,  label:'Manage User Profile',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC3', cx:345, cy:315,  label:'Manage Social Accounts',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC4', cx:345, cy:415,  label:'View / Update Social Passwords',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC5', cx:345, cy:515,  label:'Submit Emergency Request',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC6', cx:345, cy:615,  label:'Upload PDF Document',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC7', cx:345, cy:715,  label:'Admin Review & Approve Request',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+  { id:'UC8', cx:345, cy:810,  label:'Family Emergency Token Access',
+    fill:'#1e3a8a', stroke:'#3b82f6', tc:'#bfdbfe' },
+
+  /* ── SECURITY CONTROLS (cx=750) ───────────────────────────── */
+  { id:'SC1', cx:750, cy:115,  label:'Rate Limiting (Login)',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC2', cx:750, cy:225,  label:'Input Sanitization (Bleach)',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC3', cx:750, cy:335,  label:'CSRF Token Protection',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC4', cx:750, cy:445,  label:'Session Protection (Strong)',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC5', cx:750, cy:545,  label:'PIN Verification Gate',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC6', cx:750, cy:645,  label:'File Type & Size Validation',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC7', cx:750, cy:745,  label:'Admin Manual Review',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+  { id:'SC8', cx:750, cy:830,  label:'Security Headers (CSP / HSTS)',
+    fill:'#134e4a', stroke:'#2dd4bf', tc:'#99f6e4' },
+
+  /* ── MISUSE CASES (cx=1155) ────────────────────────────────── */
+  { id:'MC1', cx:1155, cy:115,  label:'Brute Force Login Attack',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC2', cx:1155, cy:225,  label:'XSS / Script Injection',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC3', cx:1155, cy:335,  label:'CSRF Attack',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC4', cx:1155, cy:445,  label:'Session Hijacking',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC5', cx:1155, cy:545,  label:'Unauthorized Password Access',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC6', cx:1155, cy:645,  label:'Malicious PDF Upload',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC7', cx:1155, cy:745,  label:'Fake Emergency Request',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+  { id:'MC8', cx:1155, cy:830,  label:'Token / URL Enumeration',
+    fill:'#7f1d1d', stroke:'#ef4444', tc:'#fecaca' },
+];
+
+const nodeMap = {};
+for (const n of nodes) nodeMap[n.id] = n;
+
+/* ─── ACTORS ────────────────────────────────────────────────── */
+const actors = [
+  { id:'User',          cx:72, cy:270, color:'#60a5fa',
+    ucs:['UC1','UC2','UC3','UC4'] },
+  { id:'Admin',         cx:72, cy:530, color:'#c084fc',
+    ucs:['UC7'] },
+  { id:'Beneficiary',   cx:72, cy:750, color:'#34d399',
+    ucs:['UC5','UC6','UC8'] },
+  // Misusers (right side)
+  { id:'Hacker',        cx:1435, cy:300, color:'#f87171',
+    ucs:['MC1','MC2','MC3','MC4','MC5','MC6','MC8'] },
+  { id:'Malicious\nInsider', cx:1435, cy:640, color:'#fb923c',
+    ucs:['MC5','MC7'] },
+];
+
+const actorMap = {};
+for (const a of actors) actorMap[a.id] = a;
+
+/* ─── DRAW ACTOR → USE CASE LINES (drawn first = behind ovals) */
+for (const actor of actors) {
+  for (const ucId of actor.ucs) {
+    const uc   = nodeMap[ucId];
+    const left = actor.cx < uc.cx;
+    add(el('line', {
+      x1: actor.cx,
+      y1: actor.cy,
+      x2: left ? uc.cx - RX : uc.cx + RX,
+      y2: uc.cy,
+      stroke:'#2d3f55', 'stroke-width':1.2,
+    }));
+  }
+}
+
+/* ─── THREAT LINES: MC <<threatens>> UC (red dashed) ─────────── */
+const threats = [
+  { mc:'MC1', uc:'UC1' },   // Brute Force → Login
+  { mc:'MC2', uc:'UC2' },   // XSS → Manage Profile
+  { mc:'MC2', uc:'UC3' },   // XSS → Manage Social Accounts
+  { mc:'MC3', uc:'UC3' },   // CSRF → Manage Social Accounts
+  { mc:'MC3', uc:'UC4' },   // CSRF → View/Update Passwords
+  { mc:'MC4', uc:'UC1' },   // Session Hijacking → Login
+  { mc:'MC5', uc:'UC4' },   // Unauthorized Access → View/Update Passwords
+  { mc:'MC6', uc:'UC6' },   // Malicious PDF → Upload PDF
+  { mc:'MC7', uc:'UC5' },   // Fake Emergency → Submit Emergency
+  { mc:'MC7', uc:'UC7' },   // Fake Emergency → Admin Review
+  { mc:'MC8', uc:'UC8' },   // Token Enumeration → Family Token Access
+];
+
+for (const t of threats) {
+  const mc = nodeMap[t.mc];
+  const uc = nodeMap[t.uc];
+  // line from left edge of MC to right edge of UC
+  add(el('line', {
+    x1: mc.cx - RX, y1: mc.cy,
+    x2: uc.cx + RX, y2: uc.cy,
+    stroke:'#ef4444', 'stroke-width':1.2,
+    'stroke-dasharray':'6,3',
+    'marker-end':'url(#arrRed)',
+    opacity:0.75,
+  }));
+}
+
+/* ─── MITIGATION LINES: SC <<mitigates>> MC (green dashed) ───── */
+const mitigations = [
+  { sc:'SC1', mc:'MC1' },   // Rate Limiting → Brute Force
+  { sc:'SC2', mc:'MC2' },   // Input Sanitization → XSS
+  { sc:'SC3', mc:'MC3' },   // CSRF Token → CSRF Attack
+  { sc:'SC4', mc:'MC4' },   // Session Protection → Session Hijacking
+  { sc:'SC5', mc:'MC5' },   // PIN Gate → Unauthorized Access
+  { sc:'SC6', mc:'MC6' },   // File Validation → Malicious PDF
+  { sc:'SC7', mc:'MC7' },   // Admin Review → Fake Emergency
+  { sc:'SC8', mc:'MC2' },   // Security Headers → XSS
+  { sc:'SC8', mc:'MC8' },   // Security Headers → Token Enumeration
+];
+
+for (const m of mitigations) {
+  const sc = nodeMap[m.sc];
+  const mc = nodeMap[m.mc];
+  add(el('line', {
+    x1: sc.cx + RX, y1: sc.cy,
+    x2: mc.cx - RX, y2: mc.cy,
+    stroke:'#10b981', 'stroke-width':1.2,
+    'stroke-dasharray':'6,3',
+    'marker-end':'url(#arrGreen)',
+    opacity:0.7,
+  }));
+}
+
+/* ─── DRAW ALL OVALS + LABELS ───────────────────────────────── */
+for (const n of nodes) {
+  add(el('ellipse', {
+    cx:n.cx, cy:n.cy, rx:RX, ry:RY,
+    fill:n.fill, stroke:n.stroke, 'stroke-width':1.8,
+  }));
+  add(el('text', {
+    x:n.cx, y:n.cy + 4,
+    'text-anchor':'middle', 'dominant-baseline':'middle',
+    fill:n.tc, 'font-size':10.5,
+    'font-family':'Segoe UI', 'font-weight':'500',
+  }, n.label));
+}
+
+/* ─── DRAW ACTORS ───────────────────────────────────────────── */
+function drawActor(cx, cy, label, color) {
+  const HR  = 15;
+  const hcy = cy - 48;
+  add(el('circle', { cx, cy:hcy, r:HR,
+    fill:'none', stroke:color, 'stroke-width':2.2 }));
+  add(el('line', { x1:cx, y1:hcy+HR, x2:cx, y2:cy+10,
+    stroke:color, 'stroke-width':2.2 }));
+  add(el('line', { x1:cx-20, y1:cy-15, x2:cx+20, y2:cy-15,
+    stroke:color, 'stroke-width':2.2 }));
+  add(el('line', { x1:cx, y1:cy+10, x2:cx-16, y2:cy+40,
+    stroke:color, 'stroke-width':2.2 }));
+  add(el('line', { x1:cx, y1:cy+10, x2:cx+16, y2:cy+40,
+    stroke:color, 'stroke-width':2.2 }));
+  // multi-line label support
+  const lines = label.split('\n');
+  lines.forEach((line, i) => {
+    add(el('text', { x:cx, y:cy + 58 + i * 15, 'text-anchor':'middle',
+      fill:color, 'font-size':12, 'font-weight':'700',
+      'font-family':'Segoe UI' }, line));
+  });
+}
+
+for (const a of actors) {
+  drawActor(a.cx, a.cy, a.id, a.color);
+}
+
+/* ─── <<threatens>> / <<mitigates>> RELATIONSHIP LABELS ─────── */
+// Label on the threat arrows (a few representative ones for clarity)
+const arrowLabels = [
+  // Show <<threatens>> label midpoint of MC1→UC1
+  { x:(nodeMap['MC1'].cx - RX + nodeMap['UC1'].cx + RX)/2,
+    y:(nodeMap['MC1'].cy  + nodeMap['UC1'].cy)/2 - 6,
+    text:'<<threatens>>', color:'#ef4444' },
+  // Show <<mitigates>> label midpoint of SC1→MC1
+  { x:(nodeMap['SC1'].cx + RX + nodeMap['MC1'].cx - RX)/2,
+    y:(nodeMap['SC1'].cy  + nodeMap['MC1'].cy)/2 - 6,
+    text:'<<mitigates>>', color:'#10b981' },
+];
+for (const lbl of arrowLabels) {
+  add(el('rect', { x:lbl.x - 35, y:lbl.y - 10,
+    width:70, height:14, rx:3, fill:'#1e293b' }));
+  add(el('text', { x:lbl.x, y:lbl.y,
+    'text-anchor':'middle',
+    fill:lbl.color, 'font-size':9,
+    'font-family':'Segoe UI', 'font-style':'italic' }, lbl.text));
+}
+
+/* ─── LEGEND FOR ARROW TYPES ────────────────────────────────── */
+const legendY = 875;
+// Red dashed
+add(el('line', { x1:160, y1:legendY, x2:220, y2:legendY,
+  stroke:'#ef4444', 'stroke-width':1.5, 'stroke-dasharray':'6,3',
+  'marker-end':'url(#arrRed)' }));
+add(el('text', { x:228, y:legendY+4, fill:'#ef4444',
+  'font-size':10, 'font-family':'Segoe UI', 'font-style':'italic' },
+  '<<threatens>>'));
+
+// Green dashed
+add(el('line', { x1:370, y1:legendY, x2:430, y2:legendY,
+  stroke:'#10b981', 'stroke-width':1.5, 'stroke-dasharray':'6,3',
+  'marker-end':'url(#arrGreen)' }));
+add(el('text', { x:438, y:legendY+4, fill:'#10b981',
+  'font-size':10, 'font-family':'Segoe UI', 'font-style':'italic' },
+  '<<mitigates>>'));
+
+// Gray solid
+add(el('line', { x1:580, y1:legendY, x2:640, y2:legendY,
+  stroke:'#2d3f55', 'stroke-width':1.5 }));
+add(el('text', { x:648, y:legendY+4, fill:'#64748b',
+  'font-size':10, 'font-family':'Segoe UI', 'font-style':'italic' },
+  'association'));
+
+</script>
+</body>
+</html>

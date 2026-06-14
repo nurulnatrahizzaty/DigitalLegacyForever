@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legacy Digital Forever — System Flowchart</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 24px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+    .legend-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+    .chart-container {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 32px 16px;
+      border: 1px solid #334155;
+      overflow-x: auto;
+    }
+    .mermaid {
+      display: block;
+      min-width: 900px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Legacy Digital Forever — System Flowchart</h1>
+<p class="subtitle">All roles in one view: User &nbsp;·&nbsp; Admin &nbsp;·&nbsp; Beneficiary</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#2563eb"></div> User</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div> Admin</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#065f46"></div> Beneficiary</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#475569"></div> Public / Shared</div>
+</div>
+
+<div class="chart-container">
+<div class="mermaid">
+flowchart TD
+    START([START]) --> V([Visitor])
+    V --> HOME[Home Page]
+    HOME --> LOGIN[Login]
+    HOME --> REG[Register]
+    HOME --> GUEST
+
+    REG --> LOGIN
+    LOGIN --> FP[Forgot Password]
+    FP --> RP[Reset via Email Token]
+    RP --> LOGIN
+    LOGIN --> OAUTH[OAuth - Google / Facebook / Twitter]
+    OAUTH --> ROLEQ
+
+    LOGIN --> ROLEQ{Who are you?}
+    ROLEQ -->|User| UDASH
+    ROLEQ -->|Admin| ADASH
+
+    subgraph SG_USER ["USER"]
+        UDASH[User Dashboard]
+        UDASH --> UP[Profile]
+        UDASH --> USOC[Social Accounts]
+        UDASH --> UPIN[Set Security PIN]
+        UDASH --> UFM[Family Members]
+        UDASH --> UALERT[Inactivity Alert]
+        UDASH --> UNOTIF[Notifications]
+        UDASH --> USETT[Settings]
+
+        UP --> UUPD[Update Profile]
+        UP --> UPHOTO[Upload Profile Photo]
+
+        USOC --> USOCE[Edit Social Account]
+        USOC --> USOCD[Delete Social Account]
+        USOC --> USOCC[Link via OAuth]
+
+        UFM --> UFMV[View Member]
+        UFM --> UFME[Edit Member]
+        UFM --> UFMD[Delete Member]
+
+        UNOTIF --> UNOTIFR[Respond to Notification]
+
+        UPIN --> UPINQ{Enter PIN}
+        UPINQ -->|PIN correct| UPINOK[PIN Verified]
+        UPINQ -->|PIN wrong| UPINFAIL[Access Denied]
+        UPINOK --> UVIEW[View Connected Social Media Passwords]
+        UPINOK --> UUPDSOC[Update Connected Social Media Passwords]
+        UVIEW --> USOC
+        UUPDSOC --> USOC
+    end
+
+    subgraph SG_ADMIN ["ADMIN"]
+        ADASH[Admin Dashboard]
+        ADASH --> AUSR[All Users]
+        ADASH --> AACT[Active Users]
+        ADASH --> AINACT[Inactive Users]
+        ADASH --> AEMERG[Emergency Requests]
+        ADASH --> AADD[Add User]
+        ADASH --> AAUDIT[Audit Log]
+        ADASH --> ANOTIF[Notifications]
+        ADASH --> AEMAIL[Send Bulk Email]
+
+        AINACT --> AINC[Email Inactive User]
+        AINACT --> AINV[Activate Account]
+        AINACT --> AINF[Email Family]
+        AINACT --> AINP[Generate PDF Report]
+
+        AEMERG --> AAPPR[Approve Beneficiary]
+        AEMERG --> AREJ[Reject Beneficiary]
+        AEMERG --> ARPT[Send Report]
+    end
+
+    subgraph SG_BENEF ["BENEFICIARY"]
+        GUEST[Emergency Gateway]
+        GUEST --> BLOGIN[Beneficiary Login]
+        GUEST --> BREG[Register - Submit Request]
+        GUEST --> BFAM[Family Emergency Token Access]
+
+        BREG --> BUPLOAD[Upload PDF Document]
+        BUPLOAD --> BPEND[Pending Admin Review]
+
+        BLOGIN --> BDASH[Beneficiary Dashboard]
+        BDASH --> BVIEW[View Approved Social Accounts]
+        BVIEW --> BPIN{Verify PIN}
+        BPIN -->|Correct| BCRED[Reveal Credentials]
+        BPIN -->|Wrong| BVIEW
+        BDASH --> BSTAT[View Request Status]
+        BDASH --> BLOGO[Logout]
+    end
+
+    BPEND -.->|submitted for review| AEMERG
+    AAPPR -->|access granted| BDASH
+    AREJ --> BDENIED[Access Denied - Email Sent]
+
+    UDASH --> LOGOUT[Logout]
+    ADASH --> LOGOUT
+
+    BDENIED --> END([END])
+    BLOGO --> END
+    LOGOUT --> END
+
+    classDef publicClass  fill:#334155,stroke:#64748b,color:#f1f5f9
+    classDef userClass    fill:#1d4ed8,stroke:#93c5fd,color:#eff6ff
+    classDef adminClass   fill:#6d28d9,stroke:#a78bfa,color:#ede9fe
+    classDef benefClass   fill:#065f46,stroke:#34d399,color:#d1fae5
+    classDef decClass     fill:#1e293b,stroke:#94a3b8,color:#f1f5f9
+    classDef dangerClass  fill:#7f1d1d,stroke:#f87171,color:#fee2e2
+
+    classDef startEndClass fill:#0f172a,stroke:#f8fafc,color:#f8fafc,stroke-width:3px
+
+    class START,END startEndClass
+    class V,HOME,LOGIN,REG,FP,RP,OAUTH,LOGOUT publicClass
+    class ROLEQ,BPIN decClass
+    class UPINQ decClass
+    class UPINFAIL dangerClass
+    class UDASH,UP,USOC,UPIN,UFM,UALERT,UNOTIF,USETT,UUPD,UPHOTO,USOCE,USOCD,USOCC,UFMV,UFME,UFMD,UNOTIFR,UPINOK,UVIEW,UUPDSOC userClass
+    class ADASH,AUSR,AACT,AINACT,AEMERG,AADD,AAUDIT,ANOTIF,AEMAIL,AINC,AINV,AINF,AINP,AAPPR,AREJ,ARPT adminClass
+    class GUEST,BLOGIN,BREG,BFAM,BUPLOAD,BPEND,BDASH,BVIEW,BCRED,BSTAT,BLOGO benefClass
+    class BDENIED dangerClass
+</div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#475569',
+      lineColor: '#64748b',
+      secondaryColor: '#334155',
+      tertiaryColor: '#0f172a',
+      fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
+      fontSize: '13px',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 24,
+      nodeSpacing: 40,
+      rankSpacing: 50,
+    }
+  });
+</script>
+
+</body>
+</html>

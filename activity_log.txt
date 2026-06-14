@@ -1,0 +1,18 @@
+# LEGACY_DIGITAL_FOREVER_PROTOTYP Activity Log
+
+Date: Current session
+
+## Actions:
+- Started Flask app at http://127.0.0.1:5000 (debug=True)
+- DB connected: instance/database_setup.db
+- OAuth Google registered
+- Background jobs: alerts/notifications active
+- Created new server instance
+- Shut down all servers (port 5000 free)
+- No data loss, DB preserved
+
+## Status:
+- App ready for restart
+- Tokens/DB intact
+
+Session complete.

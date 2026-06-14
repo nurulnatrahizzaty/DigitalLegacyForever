@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>System Architecture – Legacy Digital Forever</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f172a;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 24px;
+    }
+    h1  { color: #f8fafc; font-size: 1.8rem; margin-bottom: 6px; }
+    .sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 28px; }
+    .chart-wrap {
+      background: #1e293b;
+      border-radius: 16px;
+      border: 1px solid #334155;
+      padding: 32px;
+      width: 100%;
+      max-width: 960px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h1>System Architecture</h1>
+<p class="sub">Legacy Digital Forever</p>
+
+<div class="chart-wrap">
+<div class="mermaid">
+flowchart TD
+
+    subgraph CLIENTS ["Clients"]
+        USER([User])
+        ADMIN([Admin])
+        BENEF([Beneficiary])
+    end
+
+    subgraph FLASK ["Flask Application Server"]
+        direction TB
+
+        subgraph SEC ["Security Middleware"]
+            S1[Rate Limiter]
+            S2[CSRF Protection]
+            S3[Session Guard]
+            S4[Security Headers]
+            S5[Input Sanitization]
+        end
+
+        subgraph ROUTES ["Route Handlers"]
+            R1[Public Routes]
+            R2[User Routes]
+            R3[Admin Routes]
+            R4[Beneficiary Routes]
+            R5[OAuth Routes]
+        end
+
+        subgraph SERVICES ["Core Services"]
+            SV1[Flask-Login\nAuth Manager]
+            SV2[APScheduler\nBackground Jobs]
+            SV3[Email Service\nGmail SMTP]
+            SV4[PDF Generator\nReportLab]
+            SV5[Fernet Encryption\nkey.bin]
+        end
+
+        subgraph ORM ["Data Models — SQLAlchemy ORM"]
+            M1[User]
+            M2[SocialAccount]
+            M3[FamilyMember]
+            M4[AlertSetting]
+            M5[EmergencyRequest]
+            M6[Notification]
+            M7[AuditLog]
+            M8[Tokens]
+        end
+    end
+
+    subgraph STORAGE ["Storage"]
+        DB[(SQLite Database)]
+        FILES[/File Storage\nstatic/uploads/]
+        KEY[key.bin\nEncryption Key]
+    end
+
+    subgraph EXTERNAL ["External Services"]
+        OAUTH[OAuth Providers\nGoogle · Facebook · Twitter\nInstagram · LinkedIn · TikTok]
+        SMTP[Gmail SMTP\nsmtp.gmail.com:587]
+    end
+
+    CLIENTS --> SEC
+    SEC --> ROUTES
+    ROUTES --> SERVICES
+    SERVICES --> ORM
+    ORM --> STORAGE
+    SERVICES --> EXTERNAL
+    R5 --> OAUTH
+
+    classDef clientStyle fill:#1e3a8a,stroke:#3b82f6,color:#bfdbfe
+    classDef secStyle    fill:#451a03,stroke:#f59e0b,color:#fde68a
+    classDef routeStyle  fill:#1e1b4b,stroke:#6d28d9,color:#c4b5fd
+    classDef svcStyle    fill:#022c22,stroke:#10b981,color:#a7f3d0
+    classDef ormStyle    fill:#2e1065,stroke:#7c3aed,color:#ddd6fe
+    classDef storeStyle  fill:#1e293b,stroke:#475569,color:#e2e8f0
+    classDef extStyle    fill:#7f1d1d,stroke:#ef4444,color:#fecaca
+
+    class USER,ADMIN,BENEF clientStyle
+    class S1,S2,S3,S4,S5 secStyle
+    class R1,R2,R3,R4,R5 routeStyle
+    class SV1,SV2,SV3,SV4,SV5 svcStyle
+    class M1,M2,M3,M4,M5,M6,M7,M8 ormStyle
+    class DB,FILES,KEY storeStyle
+    class OAUTH,SMTP extStyle
+</div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#f1f5f9',
+      primaryBorderColor: '#475569',
+      lineColor: '#64748b',
+      secondaryColor: '#334155',
+      tertiaryColor: '#0f172a',
+      fontFamily: 'Segoe UI, Tahoma, sans-serif',
+      fontSize: '13px',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 30,
+      rankSpacing: 40,
+    }
+  });
+</script>
+
+</body>
+</html>
